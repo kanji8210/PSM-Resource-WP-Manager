@@ -1,0 +1,410 @@
+/* PSM Resource Manager Frontend Styles */
+
+/* Resource Archive Styles */
+.psm-resources-archive {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.psm-resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.psm-resource-card {
+    background: #fff;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.psm-resource-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.psm-resource-image {
+    height: 200px;
+    overflow: hidden;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.psm-resource-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.psm-resource-image .no-image {
+    color: #6c757d;
+    font-size: 48px;
+}
+
+.psm-resource-content {
+    padding: 20px;
+}
+
+.psm-resource-type {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+.psm-resource-type-pdf {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.psm-resource-type-video {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.psm-resource-type-podcast {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.psm-resource-type-article {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.psm-resource-type-link {
+    background: #fce4ec;
+    color: #c2185b;
+}
+
+.psm-resource-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    line-height: 1.3;
+}
+
+.psm-resource-title a {
+    text-decoration: none;
+    color: #212529;
+    transition: color 0.3s ease;
+}
+
+.psm-resource-title a:hover {
+    color: #0073aa;
+}
+
+.psm-resource-excerpt {
+    color: #6c757d;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.psm-resource-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
+}
+
+.psm-resource-date {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.psm-resource-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: #0073aa;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+.psm-resource-link:hover {
+    background: #005a87;
+    color: white;
+}
+
+.psm-resource-link .dashicons {
+    margin-left: 5px;
+    font-size: 16px;
+}
+
+/* Single Resource Styles */
+.psm-single-resource {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.psm-resource-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.psm-resource-header .psm-resource-type {
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.psm-resource-header h1 {
+    font-size: 36px;
+    margin-bottom: 15px;
+    color: #212529;
+}
+
+.psm-resource-header .psm-resource-date {
+    font-size: 16px;
+    color: #6c757d;
+}
+
+.psm-resource-body {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #333;
+    margin-bottom: 40px;
+}
+
+.psm-resource-attachments {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 40px;
+}
+
+.psm-resource-attachments h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #495057;
+}
+
+.psm-attachment-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.psm-attachment-icon {
+    margin-right: 15px;
+    font-size: 24px;
+    color: #0073aa;
+}
+
+.psm-attachment-info h4 {
+    margin: 0 0 5px 0;
+    color: #212529;
+}
+
+.psm-attachment-info p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.psm-attachment-actions {
+    margin-left: auto;
+}
+
+.psm-attachment-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    background: #0073aa;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+.psm-attachment-button:hover {
+    background: #005a87;
+    color: white;
+}
+
+.psm-attachment-button .dashicons {
+    margin-left: 8px;
+}
+
+/* Video/Podcast Embed Styles */
+.psm-media-embed {
+    margin: 30px 0;
+    text-align: center;
+}
+
+.psm-media-embed iframe,
+.psm-media-embed video,
+.psm-media-embed audio {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.psm-media-embed .hosting-info {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+/* Filter/Search Styles */
+.psm-resources-filters {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.psm-filter-row {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.psm-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.psm-filter-group label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+}
+
+.psm-filter-group select,
+.psm-filter-group input {
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.psm-filter-button {
+    padding: 10px 20px;
+    background: #0073aa;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 20px;
+}
+
+.psm-filter-button:hover {
+    background: #005a87;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .psm-resources-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .psm-resource-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .psm-resource-header h1 {
+        font-size: 28px;
+    }
+    
+    .psm-attachment-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .psm-attachment-actions {
+        margin-left: 0;
+        margin-top: 15px;
+    }
+    
+    .psm-filter-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+/* Loading States */
+.psm-loading {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.psm-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #0073aa;
+    border-radius: 50%;
+    animation: psm-spin 1s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes psm-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* No Results State */
+.psm-no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+}
+
+.psm-no-results h3 {
+    margin-bottom: 15px;
+    color: #495057;
+}
+
+/* Accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus States */
+.psm-resource-link:focus,
+.psm-attachment-button:focus,
+.psm-filter-button:focus {
+    outline: 2px solid #0073aa;
+    outline-offset: 2px;
+}
