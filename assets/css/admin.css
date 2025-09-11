@@ -1,0 +1,346 @@
+/* PSM Resource Manager Admin Styles */
+
+/* General Admin Styling */
+.wrap h1.wp-heading-inline {
+    margin-bottom: 10px;
+}
+
+.page-title-action {
+    margin-left: 10px;
+}
+
+/* Form Styling */
+.form-table th {
+    width: 200px;
+    padding-left: 0;
+}
+
+.form-table .required {
+    color: #d63638;
+    font-weight: bold;
+}
+
+.form-table input[type="text"],
+.form-table input[type="url"],
+.form-table input[type="email"],
+.form-table select,
+.form-table textarea {
+    width: 100%;
+    max-width: 500px;
+}
+
+.form-table .description {
+    font-style: italic;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Type-specific Fields Animation */
+.type-specific-fields {
+    transition: all 0.3s ease-in-out;
+    opacity: 1;
+}
+
+.type-specific-fields.hidden {
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+/* Image Upload Preview */
+#resource_image_preview {
+    margin-bottom: 10px;
+}
+
+#resource_image_preview img {
+    max-width: 150px;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: block;
+}
+
+.upload-buttons {
+    margin-top: 10px;
+}
+
+.upload-buttons .button {
+    margin-right: 10px;
+}
+
+/* Resource List Table */
+.wp-list-table .column-cb {
+    width: 2.2em;
+}
+
+.wp-list-table .column-title {
+    width: 40%;
+}
+
+.wp-list-table .column-date {
+    width: 15%;
+}
+
+/* Resource Type Badges */
+.resource-type {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.resource-type-pdf {
+    background: #e3f2fd;
+    color: #1565c0;
+    border: 1px solid #bbdefb;
+}
+
+.resource-type-video {
+    background: #f3e5f5;
+    color: #7b1fa2;
+    border: 1px solid #e1bee7;
+}
+
+.resource-type-podcast {
+    background: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.resource-type-article {
+    background: #fff3e0;
+    color: #ef6c00;
+    border: 1px solid #ffcc02;
+}
+
+.resource-type-link {
+    background: #fce4ec;
+    color: #c2185b;
+    border: 1px solid #f8bbd9;
+}
+
+/* Status Indicators */
+.status-publish {
+    color: #4caf50;
+    font-weight: 600;
+}
+
+.status-draft {
+    color: #ff9800;
+    font-weight: 600;
+}
+
+.status-private {
+    color: #2196f3;
+    font-weight: 600;
+}
+
+.status-pending {
+    color: #9c27b0;
+    font-weight: 600;
+}
+
+/* No Resources State */
+.no-resources {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f9f9f9;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.no-resources p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.no-resources a {
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* Bulk Actions */
+.tablenav {
+    margin: 10px 0;
+}
+
+.bulkactions select {
+    margin-right: 5px;
+}
+
+/* Pagination */
+.tablenav-pages {
+    float: right;
+}
+
+.pagination-links a,
+.pagination-links span {
+    display: inline-block;
+    padding: 3px 6px;
+    margin: 0 2px;
+    border: 1px solid #ddd;
+    text-decoration: none;
+}
+
+.pagination-links .current {
+    background: #0073aa;
+    color: white;
+    border-color: #0073aa;
+}
+
+/* Resource Types Page */
+#col-container {
+    display: flex;
+    gap: 20px;
+}
+
+#col-left {
+    flex: 0 0 320px;
+}
+
+#col-right {
+    flex: 1;
+}
+
+.form-wrap {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.form-wrap h2 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.form-field {
+    margin-bottom: 15px;
+}
+
+.form-field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.form-field input,
+.form-field textarea {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.form-field p {
+    color: #666;
+    font-style: italic;
+    font-size: 13px;
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+.form-required label:after {
+    content: " *";
+    color: #d63638;
+}
+
+/* Validation Styles */
+.error {
+    border-color: #d63638 !important;
+    box-shadow: 0 0 0 1px #d63638;
+}
+
+.url-error {
+    display: block;
+    color: #d63638;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.spinner {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+/* Success/Error Messages */
+.notice {
+    margin: 15px 0;
+    padding: 12px;
+    border-left: 4px solid #0073aa;
+    background: #fff;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.notice-success {
+    border-left-color: #4caf50;
+}
+
+.notice-error {
+    border-left-color: #d63638;
+}
+
+.notice-warning {
+    border-left-color: #ff9800;
+}
+
+/* Responsive Design */
+@media (max-width: 782px) {
+    #col-container {
+        flex-direction: column;
+    }
+    
+    #col-left {
+        flex: none;
+    }
+    
+    .form-table th,
+    .form-table td {
+        display: block;
+        width: auto;
+        padding: 10px 0;
+    }
+    
+    .form-table th {
+        border-bottom: none;
+        padding-bottom: 5px;
+    }
+    
+    .resource-type {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .form-wrap {
+        background: #1d2327;
+        border-color: #3c434a;
+    }
+    
+    .form-field input,
+    .form-field textarea {
+        background: #2c3338;
+        border-color: #3c434a;
+        color: #f0f0f1;
+    }
+    
+    .no-resources {
+        background: #1d2327;
+        border-color: #3c434a;
+    }
+}
