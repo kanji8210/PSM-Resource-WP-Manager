@@ -35,6 +35,7 @@ class PSM_Resource_Manager {
             'has_archive' => true,
             'show_in_menu' => false, // Menu personnalisé
             'supports' => [ 'title', 'editor', 'thumbnail' ],
+            'taxonomies' => [ 'category' ], // Ajout de la taxonomie native
         ];
         register_post_type( 'resource', $args );
     }
