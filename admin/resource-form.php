@@ -40,3 +40,46 @@ echo '<script>jQuery(function($){
 	$("#psm_type").on("change", updateFields);
 	updateFields();
 });</script>';
+// Gestion soumission formulaire
+if (isset($_POST['psm_resource_nonce']) && wp_verify_nonce($_POST['psm_resource_nonce'], 'psm_save_resource')) {
+	$title = sanitize_text_field($_POST['psm_title']);
+	$desc = sanitize_textarea_field($_POST['psm_description']);
+	$type = sanitize_text_field($_POST['psm_type']);
+	$host = isset($_POST['psm_host']) ? sanitize_text_field($_POST['psm_host']) : '';
+	$url = isset($_POST['psm_url']) ? esc_url_raw($_POST['psm_url']) : '';
+	$pdf_url = '';
+	if ($type === 'pdf' && isset($_FILES['psm_pdf']) && $_FILES['psm_pdf']['size'] > 0) {
+		$upload_dir = wp_upload_dir();
+		$psm_dir = $upload_dir['basedir'] . '/PSM_RMA/pdfs';
+		if (!file_exists($psm_dir)) {
+			wp_mkdir_p($psm_dir);
+		}
+		$file = $_FILES['psm_pdf'];
+		$filename = wp_unique_filename($psm_dir, $file['name']);
+		$target = $psm_dir . '/' . $filename;
+		if (move_uploaded_file($file['tmp_name'], $target)) {
+			$pdf_url = $upload_dir['baseurl'] . '/PSM_RMA/pdfs/' . $filename;
+		}
+	}
+	// Créer le post
+	$post_id = wp_insert_post([
+		'post_title' => $title,
+		'post_content' => $desc,
+		'post_type' => 'resource',
+		'post_status' => 'publish',
+	]);
+	if ($post_id && !is_wp_error($post_id)) {
+		wp_set_object_terms($post_id, ucfirst($type), 'resource_type');
+		if ($type === 'pdf') {
+			update_post_meta($post_id, 'psm_resource_url', $pdf_url);
+		} else {
+			update_post_meta($post_id, 'psm_resource_platform', $host);
+			update_post_meta($post_id, 'psm_resource_url', $url);
+		}
+		// Message debug + lien
+		$view_link = get_permalink($post_id);
+		echo '<div class="notice notice-success is-dismissible"><p>Resource created! <a href="' . esc_url($view_link) . '" target="_blank">View Resource</a></p></div>';
+	} else {
+		echo '<div class="notice notice-error is-dismissible"><p>Error creating resource.</p></div>';
+	}
+}
