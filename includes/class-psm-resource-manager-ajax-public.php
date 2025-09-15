@@ -41,7 +41,19 @@ class PSM_Resource_Manager_Ajax_Public {
         ob_start();
         if ($q->have_posts()) {
             while ($q->have_posts()) { $q->the_post();
-                get_template_part('templates/resource', get_post_meta(get_the_ID(), 'psm_resource_platform', true));
+                $thumb = get_the_post_thumbnail_url(get_the_ID(), 'medium');
+                $title = get_the_title();
+                $type = get_the_terms(get_the_ID(), 'resource_type');
+                $type_label = ($type && !is_wp_error($type)) ? esc_html($type[0]->name) : '-';
+                $cats = get_the_category();
+                $cat_labels = $cats ? implode(', ', array_map(function($c){ return esc_html($c->name); }, $cats)) : '-';
+                echo '<div class="psm-resource-item" style="display:flex;align-items:center;gap:16px;margin-bottom:18px;">';
+                if ($thumb) echo '<div><img src="'.esc_url($thumb).'" alt="'.esc_attr($title).'" style="width:90px;height:auto;border-radius:6px;"></div>';
+                echo '<div>';
+                echo '<div class="psm-resource-title" style="font-weight:bold;font-size:1.1em;">' . esc_html($title) . '</div>';
+                echo '<div class="psm-resource-meta" style="font-size:0.95em;color:#666;">Type: ' . $type_label . ' | Category: ' . $cat_labels . '</div>';
+                echo '</div>';
+                echo '</div>';
             }
         } else {
             echo '<p>No resources found.</p>';
