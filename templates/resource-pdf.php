@@ -9,9 +9,9 @@ if (!$url) return;
 echo '<div class="psm-resource-pdf">';
 echo '<div class="desc">' . esc_html($desc) . '</div>';
 // Boutons
-echo '<div style="margin-bottom:10px;">';
-echo '<a href="' . esc_url($url) . '" class="button" download title="Télécharger"><span style="font-size:18px;">&#128190;</span> Télécharger</a> ';
-echo '<a href="' . esc_url($url) . '" class="button" target="_blank" title="Ouvrir en plein écran">Plein écran</a>';
+echo '<div style="margin-bottom:10px; margin-top:20px;">';
+echo '<a href="' . esc_url($url) . '" class="button" download title="Download"><span style="font-size:18px;">&#128190;</span> Download</a> ';
+echo '<a href="' . esc_url($url) . '" class="button" target="_blank" title="Open in full screen">Full screen</a>';
 echo '</div>';
 // Embed PDF
 echo '<div style="border:1px solid #ccc; border-radius:6px; overflow:hidden;">';

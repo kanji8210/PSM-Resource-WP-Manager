@@ -13,6 +13,8 @@ class PSM_Resource_Manager {
         if ( is_admin() ) {
             require_once PSM_RM_PLUGIN_DIR . 'admin/class-psm-resource-manager-admin.php';
             PSM_Resource_Manager_Admin::get_instance();
+        } else {
+            self::setup_templates();
         }
     }
     public static function register_cpt() {
@@ -33,9 +35,9 @@ class PSM_Resource_Manager {
             'labels' => $labels,
             'public' => true,
             'has_archive' => true,
-            'show_in_menu' => false, // Menu personnalisé
+            'show_in_menu' => false, // Custom menu
             'supports' => [ 'title', 'editor', 'thumbnail' ],
-            'taxonomies' => [ 'category' ], // Ajout de la taxonomie native
+            'taxonomies' => [ 'category' ], // Add native category taxonomy
         ];
         register_post_type( 'resource', $args );
     }
@@ -60,5 +62,24 @@ class PSM_Resource_Manager {
             'rewrite' => [ 'slug' => 'resource-type' ],
         ];
         register_taxonomy( 'resource_type', [ 'resource' ], $args );
+    }
+    // Force the use of custom templates for each resource type (PDF, Video, Podcast)
+    public static function setup_templates() {
+        add_filter('the_content', [__CLASS__, 'inject_resource_content']);
+    }
+    // Inject the custom template content into the page content
+    public static function inject_resource_content($content) {
+        global $post;
+        if (!is_singular('resource') || !in_the_loop() || !is_main_query()) return $content;
+        $type = get_the_terms($post->ID, 'resource_type');
+        $type_slug = $type && !is_wp_error($type) ? strtolower($type[0]->name) : '';
+        $tpl = PSM_RM_PLUGIN_DIR . 'templates/resource-' . $type_slug . '.php';
+        if (file_exists($tpl)) {
+            ob_start();
+            include $tpl;
+            $custom = ob_get_clean();
+            return $custom;
+        }
+        return $content;
     }
 }
