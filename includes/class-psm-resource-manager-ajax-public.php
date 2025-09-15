@@ -23,9 +23,11 @@ class PSM_Resource_Manager_Ajax_Public {
         $paged = isset($_POST['page']) ? intval($_POST['page']) : 1;
         $cat = isset($_POST['cat']) ? intval($_POST['cat']) : 0;
         $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
+        $columns = isset($_POST['columns']) ? max(1, intval($_POST['columns'])) : 3;
+        $per_page = isset($_POST['per_page']) ? max(1, intval($_POST['per_page'])) : 12;
         $args = [
             'post_type' => 'resource',
-            'posts_per_page' => 8,
+            'posts_per_page' => $per_page,
             'paged' => $paged,
             'post_status' => 'publish',
         ];
@@ -39,6 +41,7 @@ class PSM_Resource_Manager_Ajax_Public {
         }
         $q = new WP_Query($args);
         ob_start();
+        echo '<div class="psm-resource-grid" style="display:grid;grid-template-columns:repeat(' . $columns . ',1fr);gap:18px;">';
         if ($q->have_posts()) {
             while ($q->have_posts()) { $q->the_post();
                 $thumb = get_the_post_thumbnail_url(get_the_ID(), 'medium');
@@ -47,22 +50,27 @@ class PSM_Resource_Manager_Ajax_Public {
                 $type_label = ($type && !is_wp_error($type)) ? esc_html($type[0]->name) : '-';
                 $cats = get_the_category();
                 $cat_labels = $cats ? implode(', ', array_map(function($c){ return esc_html($c->name); }, $cats)) : '-';
-                echo '<div class="psm-resource-item" style="display:flex;align-items:center;gap:16px;margin-bottom:18px;">';
-                if ($thumb) echo '<div><img src="'.esc_url($thumb).'" alt="'.esc_attr($title).'" style="width:90px;height:auto;border-radius:6px;"></div>';
-                echo '<div>';
-                echo '<div class="psm-resource-title" style="font-weight:bold;font-size:1.1em;">' . esc_html($title) . '</div>';
-                echo '<div class="psm-resource-meta" style="font-size:0.95em;color:#666;">Type: ' . $type_label . ' | Category: ' . $cat_labels . '</div>';
-                echo '</div>';
+                echo '<div class="psm-resource-item" style="background:#fafbfc;padding:12px;border-radius:8px;box-shadow:0 1px 3px #0001;">';
+                if ($thumb) echo '<div><img src="'.esc_url($thumb).'" alt="'.esc_attr($title).'" style="width:100%;height:auto;border-radius:6px;max-width:160px;display:block;margin:0 auto 8px auto;"></div>';
+                echo '<div class="psm-resource-title" style="font-weight:bold;font-size:1.1em;margin-bottom:4px;text-align:center;">' . esc_html($title) . '</div>';
+                echo '<div class="psm-resource-meta" style="font-size:0.95em;color:#666;text-align:center;">Type: ' . $type_label . ' | Category: ' . $cat_labels . '</div>';
                 echo '</div>';
             }
         } else {
-            echo '<p>No resources found.</p>';
+            echo '<p style="grid-column:1/-1;text-align:center;">No resources found.</p>';
         }
+        echo '</div>';
         wp_reset_postdata();
         wp_send_json_success([ 'html' => ob_get_clean() ]);
     }
 
     public static function shortcode_filterable_resources($atts) {
+        $atts = shortcode_atts([
+            'columns' => 3,
+            'posts_per_page' => 12
+        ], $atts);
+        $columns = max(1, intval($atts['columns']));
+        $per_page = max(1, intval($atts['posts_per_page']));
         ob_start();
         ?>
         <div id="psm-filter-bar">
@@ -75,8 +83,47 @@ class PSM_Resource_Manager_Ajax_Public {
             foreach($cats as $cat) echo '<option value="'.esc_attr($cat->term_id).'">'.esc_html($cat->name).'</option>';
             ?></select>
         </div>
-        <div id="psm-resources-list"></div>
+        <div id="psm-resources-list" data-columns="<?php echo esc_attr($columns); ?>" data-per-page="<?php echo esc_attr($per_page); ?>"></div>
         <button id="psm-load-more" style="display:none">Load More</button>
+        <script>
+        jQuery(function($){
+            let page = 1;
+            let loading = false;
+            let columns = <?php echo esc_js($columns); ?>;
+            let per_page = <?php echo esc_js($per_page); ?>;
+            function loadResources(reset=false) {
+                if(loading) return;
+                loading = true;
+                if(reset) {
+                    $('#psm-resources-list').html('');
+                    page = 1;
+                }
+                let data = {
+                    action: 'psm_filter_resources',
+                    page: page,
+                    cat: $('#psm-filter-cat').val(),
+                    type: $('#psm-filter-type').val(),
+                    columns: columns,
+                    per_page: per_page
+                };
+                $.post(psmResourceAjax.ajaxurl, data, function(resp){
+                    if(resp.success) {
+                        if(reset) $('#psm-resources-list').html(resp.data.html);
+                        else $('#psm-resources-list').append(resp.data.html);
+                        if(resp.data.html && resp.data.html.indexOf('No resources') === -1) {
+                            $('#psm-load-more').show();
+                        } else {
+                            $('#psm-load-more').hide();
+                        }
+                    }
+                    loading = false;
+                });
+            }
+            $('#psm-filter-bar select').on('change', function(){ loadResources(true); });
+            $('#psm-load-more').on('click', function(){ page++; loadResources(); });
+            if($('#psm-resources-list').length) loadResources(true);
+        });
+        </script>
         <?php
         return ob_get_clean();
     }
