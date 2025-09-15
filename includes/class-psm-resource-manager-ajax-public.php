@@ -51,7 +51,7 @@ class PSM_Resource_Manager_Ajax_Public {
                 $cats = get_the_category();
                 $cat_labels = $cats ? implode(', ', array_map(function($c){ return esc_html($c->name); }, $cats)) : '-';
                 echo '<div class="psm-resource-item" style="background:#fafbfc;padding:12px;border-radius:8px;box-shadow:0 1px 3px #0001;">';
-                if ($thumb) echo '<div><img src="'.esc_url($thumb).'" alt="'.esc_attr($title).'" style="width:100%;height:auto;border-radius:6px;max-width:160px;display:block;margin:0 auto 8px auto;"></div>';
+                if ($thumb) echo '<div><a href="' . esc_url(get_permalink()) . '"><img src="'.esc_url($thumb).'" alt="'.esc_attr($title).'" style="width:100%;height:auto;border-radius:6px;max-width:160px;display:block;margin:0 auto 8px auto;"></a></div>';
                 echo '<div class="psm-resource-title" style="font-weight:bold;font-size:1.1em;margin-bottom:4px;text-align:center;">' . esc_html($title) . '</div>';
                 echo '<div class="psm-resource-meta" style="font-size:0.95em;color:#666;text-align:center;">Type: ' . $type_label . ' | Category: ' . $cat_labels . '</div>';
                 echo '</div>';
