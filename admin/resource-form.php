@@ -17,6 +17,15 @@ if ($edit_id) echo '<input type="hidden" name="psm_edit_id" value="' . esc_attr(
 echo '<table class="form-table">';
 // Titre
 echo '<tr><th><label for="psm_title">Title</label></th><td><input type="text" name="psm_title" id="psm_title" class="regular-text" required value="' . $edit_title . '"></td></tr>';
+// Thumbnail
+$thumb_id = $edit_post ? get_post_thumbnail_id($edit_id) : 0;
+$thumb_url = $thumb_id ? wp_get_attachment_url($thumb_id) : '';
+echo '<tr><th><label for="psm_thumbnail">Thumbnail</label></th><td>';
+echo '<input type="file" name="psm_thumbnail" id="psm_thumbnail" accept="image/*">';
+if ($thumb_url) {
+	echo '<br><img src="' . esc_url($thumb_url) . '" alt="Current thumbnail" style="max-width:120px;max-height:120px;display:block;margin-top:5px;">';
+}
+echo '</td></tr>';
 // Description
 echo '<tr><th><label for="psm_description">Description</label></th><td><textarea name="psm_description" id="psm_description" rows="4" class="large-text" required>' . $edit_desc . '</textarea></td></tr>';
 // Catégorie WordPress
@@ -70,6 +79,15 @@ echo '<script>jQuery(function($){
 });</script>';
 // Gestion soumission formulaire
 if (isset($_POST['psm_resource_nonce']) && wp_verify_nonce($_POST['psm_resource_nonce'], 'psm_save_resource')) {
+	// Upload thumbnail
+	$thumb_id = 0;
+	if (isset($_FILES['psm_thumbnail']) && $_FILES['psm_thumbnail']['size'] > 0) {
+		require_once(ABSPATH . 'wp-admin/includes/file.php');
+		$uploaded = media_handle_upload('psm_thumbnail', 0);
+		if (!is_wp_error($uploaded)) {
+			$thumb_id = $uploaded;
+		}
+	}
 	$title = sanitize_text_field($_POST['psm_title']);
 	$desc = sanitize_textarea_field($_POST['psm_description']);
 	$type = sanitize_text_field($_POST['psm_type']);
@@ -102,6 +120,9 @@ if (isset($_POST['psm_resource_nonce']) && wp_verify_nonce($_POST['psm_resource_
 	}
 	$post_id = isset($postarr['ID']) ? wp_update_post($postarr) : wp_insert_post($postarr);
 	if ($post_id && !is_wp_error($post_id)) {
+		if ($thumb_id) {
+			set_post_thumbnail($post_id, $thumb_id);
+		}
 		wp_set_object_terms($post_id, ucfirst($type), 'resource_type');
 		if (!empty($cats)) {
 			wp_set_post_categories($post_id, $cats);

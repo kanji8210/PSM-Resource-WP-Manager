@@ -1,15 +1,54 @@
 <?php
 // Listing page for all resources with quick edit (squelette)
 echo '<div class="wrap"><h1>All Resources</h1>';
+// Filtres et tri
+$selected_cat = isset($_GET['psm_filter_cat']) ? intval($_GET['psm_filter_cat']) : 0;
+$selected_type = isset($_GET['psm_filter_type']) ? sanitize_text_field($_GET['psm_filter_type']) : '';
+$selected_order = isset($_GET['psm_order']) && strtolower($_GET['psm_order']) === 'asc' ? 'ASC' : 'DESC';
+$all_cats = get_categories([ 'hide_empty' => false ]);
+$all_types = get_terms([ 'taxonomy' => 'resource_type', 'hide_empty' => false ]);
+echo '<form method="get" style="margin-bottom:20px;">';
+echo '<input type="hidden" name="page" value="psm_resources">';
+echo 'Category: <select name="psm_filter_cat"><option value="0">All</option>';
+foreach ($all_cats as $cat) {
+	$sel = ($selected_cat == $cat->term_id) ? 'selected' : '';
+	echo '<option value="' . esc_attr($cat->term_id) . '" ' . $sel . '>' . esc_html($cat->name) . '</option>';
+}
+echo '</select> ';
+echo 'Type: <select name="psm_filter_type"><option value="">All</option>';
+foreach ($all_types as $type) {
+	$sel = ($selected_type == $type->name) ? 'selected' : '';
+	echo '<option value="' . esc_attr($type->name) . '" ' . $sel . '>' . esc_html($type->name) . '</option>';
+}
+echo '</select> ';
+echo 'Sort by date: <select name="psm_order">';
+echo '<option value="DESC"' . ($selected_order === 'DESC' ? ' selected' : '') . '>Newest first</option>';
+echo '<option value="ASC"' . ($selected_order === 'ASC' ? ' selected' : '') . '>Oldest first</option>';
+echo '</select> ';
+echo '<button type="submit" class="button">Filter</button>';
+echo '</form>';
 echo '<div id="psm-resources-list">';
 // Récupérer les ressources CPT
-$resources = get_posts([
+$query_args = [
 	'post_type' => 'resource',
 	'posts_per_page' => 20,
 	'post_status' => 'any',
 	'orderby' => 'date',
-	'order' => 'DESC',
-]);
+	'order' => $selected_order,
+];
+if ($selected_cat) {
+	$query_args['category__in'] = [$selected_cat];
+}
+if ($selected_type) {
+	$query_args['tax_query'] = [
+		[
+			'taxonomy' => 'resource_type',
+			'field' => 'name',
+			'terms' => $selected_type,
+		]
+	];
+}
+$resources = get_posts($query_args);
 if ($resources) {
 	echo '<table class="wp-list-table widefat fixed striped">';
 	echo '<thead><tr><th>Title</th><th>Type</th><th>Date</th><th>Actions</th></tr></thead><tbody>';

@@ -23,6 +23,7 @@ require_once PSM_RM_PLUGIN_DIR . 'includes/class-psm-resource-manager.php';
 require_once PSM_RM_PLUGIN_DIR . 'includes/class-psm-resource-manager-activator.php';
 require_once PSM_RM_PLUGIN_DIR . 'includes/class-psm-resource-manager-deactivator.php';
 require_once PSM_RM_PLUGIN_DIR . 'includes/class-psm-resource-manager-uninstaller.php';
+require_once PSM_RM_PLUGIN_DIR . 'includes/class-psm-resource-manager-ajax-public.php';
 
 // Lancer le plugin
 add_action( 'plugins_loaded', [ 'PSM_Resource_Manager', 'get_instance' ] );

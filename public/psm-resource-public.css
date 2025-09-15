@@ -1,0 +1,9 @@
+/* Styles basiques pour affichage public des ressources */
+#psm-filter-bar { margin-bottom: 1em; }
+#psm-filter-bar select { margin-right: 10px; }
+.psm-thumbnails { display: flex; flex-wrap: wrap; gap: 16px; }
+.psm-thumb-item { width: 160px; text-align: center; }
+.psm-thumb-item img { width: 100%; height: auto; border-radius: 6px; }
+.psm-thumb-title { font-size: 14px; margin-top: 6px; }
+#psm-resources-list { margin-bottom: 1em; }
+#psm-load-more { display: block; margin: 0 auto 2em auto; }
