@@ -40,7 +40,7 @@ foreach ($all_counties as $county) {
 }
 echo '</select> <span style="font-size:11px">(Ctrl+click to multi-select)</span>';
 echo '</td></tr>';
-// Type taxonomy (multi)
+// Type taxonomy (multi, with add new)
 $all_types = get_terms([ 'taxonomy'=>'type', 'hide_empty'=>false ]);
 echo '<tr><th><label for="psm_type">Type</label></th><td>';
 echo '<select name="psm_type[]" id="psm_type" multiple size="4" style="width:100%;max-width:340px;">';
@@ -49,6 +49,12 @@ foreach ($all_types as $type) {
 	echo '<option value="' . esc_attr($type->name) . '" ' . $selected . '>' . esc_html($type->name) . '</option>';
 }
 echo '</select> <span style="font-size:11px">(Ctrl+click to multi-select, subtypes allowed)</span>';
+echo '<div style="margin-top:8px;display:flex;gap:8px;align-items:center;">';
+echo '<input type="text" id="psm_type_new" placeholder="Add new type or subtype..." style="width:60%;padding:4px 8px;">';
+echo '<button type="button" class="button" id="psm_type_add_btn">Add</button>';
+echo '<span id="psm_type_add_msg" style="font-size:11px;color:#008000;margin-left:8px;"></span>';
+echo '</div>';
+echo '<script>jQuery(function($){\n$("#psm_type_add_btn").on("click",function(){\n  var val = $("#psm_type_new").val().trim();\n  if(!val) return;\n  var exists = false;\n  $("#psm_type option").each(function(){ if($(this).val().toLowerCase()===val.toLowerCase()) exists=true; });\n  if(exists){ $("#psm_type_add_msg").text("Type already exists").css("color","#d00"); return; }\n  var newOpt = $("<option>").val(val).text(val).prop("selected",true);\n  $("#psm_type").append(newOpt);\n  $("#psm_type_new").val("");\n  $("#psm_type_add_msg").text("Added! Will be saved on submit.").css("color","#080");\n});\n});</script>';
 echo '</td></tr>';
 // Content Type taxonomy (single)
 $all_cts = get_terms([ 'taxonomy'=>'content_type', 'hide_empty'=>false ]);
@@ -114,6 +120,14 @@ if (isset($_POST['psm_resource_nonce']) && wp_verify_nonce($_POST['psm_resource_
 	$desc = sanitize_textarea_field($_POST['psm_description']);
 	$counties = isset($_POST['psm_county']) ? array_map('sanitize_text_field', (array)$_POST['psm_county']) : [];
 	$types = isset($_POST['psm_type']) ? array_map('sanitize_text_field', (array)$_POST['psm_type']) : [];
+	// Insert new types if not exist
+	if (!empty($types)) {
+		foreach ($types as $t) {
+			if (!term_exists($t, 'type')) {
+				wp_insert_term($t, 'type');
+			}
+		}
+	}
 	$content_type = isset($_POST['psm_content_type']) ? sanitize_text_field($_POST['psm_content_type']) : '';
 	$sectors = isset($_POST['psm_sector']) ? array_map('sanitize_text_field', (array)$_POST['psm_sector']) : [];
 	$host = isset($_POST['psm_host']) ? sanitize_text_field($_POST['psm_host']) : '';
