@@ -37,31 +37,87 @@ class PSM_Resource_Manager {
             'has_archive' => true,
             'show_in_menu' => false, // Custom menu
             'supports' => [ 'title', 'editor', 'thumbnail' ],
-            'taxonomies' => [ 'category' ], // Add native category taxonomy
+            'taxonomies' => [ 'county', 'type', 'content_type', 'sector' ],
         ];
         register_post_type( 'resource', $args );
     }
     public static function register_taxonomy() {
-        $labels = [
-            'name' => 'Resource Types',
-            'singular_name' => 'Resource Type',
-            'search_items' => 'Search Resource Types',
-            'all_items' => 'All Resource Types',
-            'edit_item' => 'Edit Resource Type',
-            'update_item' => 'Update Resource Type',
-            'add_new_item' => 'Add New Resource Type',
-            'new_item_name' => 'New Resource Type Name',
-            'menu_name' => 'Resource Type',
-        ];
-        $args = [
-            'hierarchical' => false,
-            'labels' => $labels,
+        // Register county (multi, hierarchical)
+        register_taxonomy('county', [ 'resource' ], [
+            'hierarchical' => true,
+            'labels' => [
+                'name' => 'Counties',
+                'singular_name' => 'County',
+                'search_items' => 'Search Counties',
+                'all_items' => 'All Counties',
+                'edit_item' => 'Edit County',
+                'update_item' => 'Update County',
+                'add_new_item' => 'Add New County',
+                'new_item_name' => 'New County Name',
+                'menu_name' => 'County',
+            ],
             'show_ui' => true,
             'show_admin_column' => true,
             'query_var' => true,
-            'rewrite' => [ 'slug' => 'resource-type' ],
-        ];
-        register_taxonomy( 'resource_type', [ 'resource' ], $args );
+            'rewrite' => [ 'slug' => 'county' ],
+        ]);
+        // Register type (multi, not hierarchical)
+        register_taxonomy('type', [ 'resource' ], [
+            'hierarchical' => false,
+            'labels' => [
+                'name' => 'Types',
+                'singular_name' => 'Type',
+                'search_items' => 'Search Types',
+                'all_items' => 'All Types',
+                'edit_item' => 'Edit Type',
+                'update_item' => 'Update Type',
+                'add_new_item' => 'Add New Type',
+                'new_item_name' => 'New Type Name',
+                'menu_name' => 'Type',
+            ],
+            'show_ui' => true,
+            'show_admin_column' => true,
+            'query_var' => true,
+            'rewrite' => [ 'slug' => 'type' ],
+        ]);
+        // Register content_type (single, not hierarchical)
+        register_taxonomy('content_type', [ 'resource' ], [
+            'hierarchical' => false,
+            'labels' => [
+                'name' => 'Content Types',
+                'singular_name' => 'Content Type',
+                'search_items' => 'Search Content Types',
+                'all_items' => 'All Content Types',
+                'edit_item' => 'Edit Content Type',
+                'update_item' => 'Update Content Type',
+                'add_new_item' => 'Add New Content Type',
+                'new_item_name' => 'New Content Type Name',
+                'menu_name' => 'Content Type',
+            ],
+            'show_ui' => true,
+            'show_admin_column' => true,
+            'query_var' => true,
+            'rewrite' => [ 'slug' => 'content-type' ],
+        ]);
+        // Register sector (multi, not hierarchical)
+        register_taxonomy('sector', [ 'resource' ], [
+            'hierarchical' => false,
+            'labels' => [
+                'name' => 'Sectors',
+                'singular_name' => 'Sector',
+                'search_items' => 'Search Sectors',
+                'all_items' => 'All Sectors',
+                'edit_item' => 'Edit Sector',
+                'update_item' => 'Update Sector',
+                'add_new_item' => 'Add New Sector',
+                'new_item_name' => 'New Sector Name',
+                'menu_name' => 'Sector',
+            ],
+            'show_ui' => true,
+            'show_admin_column' => true,
+            'query_var' => true,
+            'rewrite' => [ 'slug' => 'sector' ],
+        ]);
     }
     // Force the use of custom templates for each resource type (PDF, Video, Podcast)
     public static function setup_templates() {
@@ -71,9 +127,9 @@ class PSM_Resource_Manager {
     public static function inject_resource_content($content) {
         global $post;
         if (!is_singular('resource') || !in_the_loop() || !is_main_query()) return $content;
-        $type = get_the_terms($post->ID, 'resource_type');
-        $type_slug = $type && !is_wp_error($type) ? strtolower($type[0]->name) : '';
-        $tpl = PSM_RM_PLUGIN_DIR . 'templates/resource-' . $type_slug . '.php';
+        $ct = get_the_terms($post->ID, 'content_type');
+        $ct_slug = $ct && !is_wp_error($ct) ? strtolower($ct[0]->name) : '';
+        $tpl = PSM_RM_PLUGIN_DIR . 'templates/resource-' . $ct_slug . '.php';
         if (file_exists($tpl)) {
             ob_start();
             include $tpl;

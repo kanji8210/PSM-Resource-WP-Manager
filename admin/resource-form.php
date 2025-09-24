@@ -3,8 +3,10 @@
 // Pré-remplir si édition
 $edit_id = isset($_GET['resource_id']) ? intval($_GET['resource_id']) : 0;
 $edit_post = $edit_id ? get_post($edit_id) : null;
-$edit_type = $edit_post ? get_the_terms($edit_id, 'resource_type') : null;
-$edit_type_val = $edit_type && !is_wp_error($edit_type) ? strtolower($edit_type[0]->name) : '';
+$edit_county = $edit_post ? wp_get_object_terms($edit_id, 'county', ['fields'=>'names']) : [];
+$edit_type = $edit_post ? wp_get_object_terms($edit_id, 'type', ['fields'=>'names']) : [];
+$edit_content_type = $edit_post ? wp_get_object_terms($edit_id, 'content_type', ['fields'=>'names']) : [];
+$edit_sector = $edit_post ? wp_get_object_terms($edit_id, 'sector', ['fields'=>'names']) : [];
 $edit_host = $edit_post ? get_post_meta($edit_id, 'psm_resource_platform', true) : '';
 $edit_url = $edit_post ? get_post_meta($edit_id, 'psm_resource_url', true) : '';
 $edit_title = $edit_post ? esc_attr($edit_post->post_title) : '';
@@ -28,26 +30,46 @@ if ($thumb_url) {
 echo '</td></tr>';
 // Description
 echo '<tr><th><label for="psm_description">Description</label></th><td><textarea name="psm_description" id="psm_description" rows="4" class="large-text" required>' . $edit_desc . '</textarea></td></tr>';
-// Catégorie WordPress
-$all_cats = get_categories([ 'hide_empty' => false ]);
-$edit_cat = $edit_post ? wp_get_post_categories($edit_id) : [];
-echo '<tr><th><label for="psm_category">Category</label></th><td>';
-echo '<select name="psm_category[]" id="psm_category" multiple size="3">';
-foreach ($all_cats as $cat) {
-	$selected = in_array($cat->term_id, $edit_cat) ? 'selected' : '';
-	echo '<option value="' . esc_attr($cat->term_id) . '" ' . $selected . '>' . esc_html($cat->name) . '</option>';
+// County taxonomy (multi)
+$all_counties = get_terms([ 'taxonomy'=>'county', 'hide_empty'=>false ]);
+echo '<tr><th><label for="psm_county">County</label></th><td>';
+echo '<select name="psm_county[]" id="psm_county" multiple size="3">';
+foreach ($all_counties as $county) {
+	$selected = in_array($county->name, $edit_county) ? 'selected' : '';
+	echo '<option value="' . esc_attr($county->name) . '" ' . $selected . '>' . esc_html($county->name) . '</option>';
 }
-echo '</select> <span style="font-size:11px">(Ctrl+clic pour multi-sélectionner)</span>';
+echo '</select> <span style="font-size:11px">(Ctrl+click to multi-select)</span>';
 echo '</td></tr>';
-// Type de ressource
-$types = [ 'pdf' => 'PDF', 'video' => 'Video', 'podcast' => 'Podcast' ];
-echo '<tr><th><label for="psm_type">Resource Type</label></th><td>';
-echo '<select name="psm_type" id="psm_type" required>';
-foreach ( $types as $val => $label ) {
-	$selected = ($edit_type_val === $val) ? 'selected' : '';
-	echo '<option value="' . esc_attr($val) . '" ' . $selected . '>' . esc_html($label) . '</option>';
+// Type taxonomy (multi)
+$all_types = get_terms([ 'taxonomy'=>'type', 'hide_empty'=>false ]);
+echo '<tr><th><label for="psm_type">Type</label></th><td>';
+echo '<select name="psm_type[]" id="psm_type" multiple size="3">';
+foreach ($all_types as $type) {
+	$selected = in_array($type->name, $edit_type) ? 'selected' : '';
+	echo '<option value="' . esc_attr($type->name) . '" ' . $selected . '>' . esc_html($type->name) . '</option>';
+}
+echo '</select> <span style="font-size:11px">(Ctrl+click to multi-select)</span>';
+echo '</td></tr>';
+// Content Type taxonomy (single)
+$all_cts = get_terms([ 'taxonomy'=>'content_type', 'hide_empty'=>false ]);
+echo '<tr><th><label for="psm_content_type">Content Type</label></th><td>';
+echo '<select name="psm_content_type" id="psm_content_type" required>';
+echo '<option value="">Select content type</option>';
+foreach ($all_cts as $ct) {
+	$selected = (!empty($edit_content_type) && $edit_content_type[0] === $ct->name) ? 'selected' : '';
+	echo '<option value="' . esc_attr($ct->name) . '" ' . $selected . '>' . esc_html($ct->name) . '</option>';
 }
 echo '</select></td></tr>';
+// Sector taxonomy (multi)
+$all_sectors = get_terms([ 'taxonomy'=>'sector', 'hide_empty'=>false ]);
+echo '<tr><th><label for="psm_sector">Sector</label></th><td>';
+echo '<select name="psm_sector[]" id="psm_sector" multiple size="3">';
+foreach ($all_sectors as $sector) {
+	$selected = in_array($sector->name, $edit_sector) ? 'selected' : '';
+	echo '<option value="' . esc_attr($sector->name) . '" ' . $selected . '>' . esc_html($sector->name) . '</option>';
+}
+echo '</select> <span style="font-size:11px">(Ctrl+click to multi-select)</span>';
+echo '</td></tr>';
 // PDF: upload
 echo '<tr class="psm-type-row psm-type-pdf"><th><label for="psm_pdf">PDF File</label></th><td><input type="file" name="psm_pdf" id="psm_pdf" accept="application/pdf">';
 if ($edit_type_val === 'pdf' && $edit_url) {
@@ -90,12 +112,15 @@ if (isset($_POST['psm_resource_nonce']) && wp_verify_nonce($_POST['psm_resource_
 	}
 	$title = sanitize_text_field($_POST['psm_title']);
 	$desc = sanitize_textarea_field($_POST['psm_description']);
-	$type = sanitize_text_field($_POST['psm_type']);
+	$counties = isset($_POST['psm_county']) ? array_map('sanitize_text_field', (array)$_POST['psm_county']) : [];
+	$types = isset($_POST['psm_type']) ? array_map('sanitize_text_field', (array)$_POST['psm_type']) : [];
+	$content_type = isset($_POST['psm_content_type']) ? sanitize_text_field($_POST['psm_content_type']) : '';
+	$sectors = isset($_POST['psm_sector']) ? array_map('sanitize_text_field', (array)$_POST['psm_sector']) : [];
 	$host = isset($_POST['psm_host']) ? sanitize_text_field($_POST['psm_host']) : '';
 	$url = isset($_POST['psm_url']) ? esc_url_raw($_POST['psm_url']) : '';
 	$cats = isset($_POST['psm_category']) ? array_map('intval', (array)$_POST['psm_category']) : [];
 	$pdf_url = '';
-	if ($type === 'pdf' && isset($_FILES['psm_pdf']) && $_FILES['psm_pdf']['size'] > 0) {
+	if ($content_type === 'pdf' && isset($_FILES['psm_pdf']) && $_FILES['psm_pdf']['size'] > 0) {
 		$upload_dir = wp_upload_dir();
 		$psm_dir = $upload_dir['basedir'] . '/PSM_RMA/pdfs';
 		if (!file_exists($psm_dir)) {
@@ -123,11 +148,11 @@ if (isset($_POST['psm_resource_nonce']) && wp_verify_nonce($_POST['psm_resource_
 		if ($thumb_id) {
 			set_post_thumbnail($post_id, $thumb_id);
 		}
-		wp_set_object_terms($post_id, ucfirst($type), 'resource_type');
-		if (!empty($cats)) {
-			wp_set_post_categories($post_id, $cats);
-		}
-		if ($type === 'pdf') {
+		if (!empty($counties)) wp_set_object_terms($post_id, $counties, 'county');
+		if (!empty($types)) wp_set_object_terms($post_id, $types, 'type');
+		if (!empty($content_type)) wp_set_object_terms($post_id, $content_type, 'content_type');
+		if (!empty($sectors)) wp_set_object_terms($post_id, $sectors, 'sector');
+		if ($content_type === 'pdf') {
 			update_post_meta($post_id, 'psm_resource_url', $pdf_url);
 		} else {
 			update_post_meta($post_id, 'psm_resource_platform', $host);
