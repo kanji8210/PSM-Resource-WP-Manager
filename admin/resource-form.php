@@ -12,28 +12,28 @@ $edit_url = $edit_post ? get_post_meta($edit_id, 'psm_resource_url', true) : '';
 $edit_title = $edit_post ? esc_attr($edit_post->post_title) : '';
 $edit_desc = $edit_post ? esc_textarea($edit_post->post_content) : '';
 
-echo '<div class="wrap"><h1>' . ($edit_id ? 'Edit Resource' : 'Add Resource') . '</h1>';
-echo '<form id="psm-resource-form" method="post" enctype="multipart/form-data">';
+echo '<div class="wrap"><h1 style="margin-bottom:24px;">' . ($edit_id ? 'Edit Resource' : 'Add Resource') . '</h1>';
+echo '<form id="psm-resource-form" method="post" enctype="multipart/form-data" style="max-width:700px;background:#fff;padding:32px 32px 24px 32px;border-radius:12px;box-shadow:0 2px 12px #0002;">';
 wp_nonce_field( 'psm_save_resource', 'psm_resource_nonce' );
 if ($edit_id) echo '<input type="hidden" name="psm_edit_id" value="' . esc_attr($edit_id) . '">';
-echo '<table class="form-table">';
+echo '<table class="form-table" style="width:100%;">';
 // Titre
-echo '<tr><th><label for="psm_title">Title</label></th><td><input type="text" name="psm_title" id="psm_title" class="regular-text" required value="' . $edit_title . '"></td></tr>';
+echo '<tr><th style="width:180px;"><label for="psm_title">Title</label></th><td><input type="text" name="psm_title" id="psm_title" class="regular-text" style="width:100%;font-size:1.1em;padding:8px;" required value="' . $edit_title . '"></td></tr>';
 // Thumbnail
 $thumb_id = $edit_post ? get_post_thumbnail_id($edit_id) : 0;
 $thumb_url = $thumb_id ? wp_get_attachment_url($thumb_id) : '';
 echo '<tr><th><label for="psm_thumbnail">Thumbnail</label></th><td>';
 echo '<input type="file" name="psm_thumbnail" id="psm_thumbnail" accept="image/*">';
 if ($thumb_url) {
-	echo '<br><img src="' . esc_url($thumb_url) . '" alt="Current thumbnail" style="max-width:120px;max-height:120px;display:block;margin-top:5px;">';
+	echo '<br><img src="' . esc_url($thumb_url) . '" alt="Current thumbnail" style="max-width:140px;max-height:140px;display:block;margin-top:8px;border-radius:8px;box-shadow:0 1px 4px #0001;">';
 }
 echo '</td></tr>';
 // Description
-echo '<tr><th><label for="psm_description">Description</label></th><td><textarea name="psm_description" id="psm_description" rows="4" class="large-text" required>' . $edit_desc . '</textarea></td></tr>';
+echo '<tr><th><label for="psm_description">Description</label></th><td><textarea name="psm_description" id="psm_description" rows="5" class="large-text" style="width:100%;font-size:1.05em;padding:8px;min-height:90px;" required>' . $edit_desc . '</textarea></td></tr>';
 // County taxonomy (multi)
 $all_counties = get_terms([ 'taxonomy'=>'county', 'hide_empty'=>false ]);
-echo '<tr><th><label for="psm_county">County</label></th><td>';
-echo '<select name="psm_county[]" id="psm_county" multiple size="3">';
+echo '<tr><th><label for="psm_county">Country</label></th><td>';
+echo '<select name="psm_county[]" id="psm_county" multiple size="6" style="width:100%;max-width:340px;">';
 foreach ($all_counties as $county) {
 	$selected = in_array($county->name, $edit_county) ? 'selected' : '';
 	echo '<option value="' . esc_attr($county->name) . '" ' . $selected . '>' . esc_html($county->name) . '</option>';
@@ -43,17 +43,17 @@ echo '</td></tr>';
 // Type taxonomy (multi)
 $all_types = get_terms([ 'taxonomy'=>'type', 'hide_empty'=>false ]);
 echo '<tr><th><label for="psm_type">Type</label></th><td>';
-echo '<select name="psm_type[]" id="psm_type" multiple size="3">';
+echo '<select name="psm_type[]" id="psm_type" multiple size="4" style="width:100%;max-width:340px;">';
 foreach ($all_types as $type) {
 	$selected = in_array($type->name, $edit_type) ? 'selected' : '';
 	echo '<option value="' . esc_attr($type->name) . '" ' . $selected . '>' . esc_html($type->name) . '</option>';
 }
-echo '</select> <span style="font-size:11px">(Ctrl+click to multi-select)</span>';
+echo '</select> <span style="font-size:11px">(Ctrl+click to multi-select, subtypes allowed)</span>';
 echo '</td></tr>';
 // Content Type taxonomy (single)
 $all_cts = get_terms([ 'taxonomy'=>'content_type', 'hide_empty'=>false ]);
 echo '<tr><th><label for="psm_content_type">Content Type</label></th><td>';
-echo '<select name="psm_content_type" id="psm_content_type" required>';
+echo '<select name="psm_content_type" id="psm_content_type" required style="width:100%;max-width:340px;">';
 echo '<option value="">Select content type</option>';
 foreach ($all_cts as $ct) {
 	$selected = (!empty($edit_content_type) && $edit_content_type[0] === $ct->name) ? 'selected' : '';
@@ -63,7 +63,7 @@ echo '</select></td></tr>';
 // Sector taxonomy (multi)
 $all_sectors = get_terms([ 'taxonomy'=>'sector', 'hide_empty'=>false ]);
 echo '<tr><th><label for="psm_sector">Sector</label></th><td>';
-echo '<select name="psm_sector[]" id="psm_sector" multiple size="3">';
+echo '<select name="psm_sector[]" id="psm_sector" multiple size="3" style="width:100%;max-width:340px;">';
 foreach ($all_sectors as $sector) {
 	$selected = in_array($sector->name, $edit_sector) ? 'selected' : '';
 	echo '<option value="' . esc_attr($sector->name) . '" ' . $selected . '>' . esc_html($sector->name) . '</option>';
@@ -87,7 +87,7 @@ foreach ( $hosts as $host ) {
 echo '</select></td></tr>';
 echo '<tr class="psm-type-row psm-type-video psm-type-podcast"><th><label for="psm_url">Resource URL</label></th><td><input type="url" name="psm_url" id="psm_url" class="regular-text" value="' . esc_attr($edit_url) . '"></td></tr>';
 echo '</table>';
-echo '<p class="submit"><input type="submit" class="button-primary" value="Save Resource"></p>';
+echo '<tr><td colspan="2" style="padding-top:24px;text-align:center;"><input type="submit" class="button-primary" style="font-size:1.1em;padding:10px 32px;border-radius:6px;" value="Save Resource"></td></tr>';
 echo '</form></div>';
 // JS pour afficher/masquer dynamiquement les champs
 echo '<script>jQuery(function($){

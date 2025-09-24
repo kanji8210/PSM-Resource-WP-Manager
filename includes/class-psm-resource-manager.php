@@ -42,28 +42,38 @@ class PSM_Resource_Manager {
         register_post_type( 'resource', $args );
     }
     public static function register_taxonomy() {
-        // Register county (multi, hierarchical)
+        // List of all African countries
+        $african_countries = [
+            'Algeria','Angola','Benin','Botswana','Burkina Faso','Burundi','Cabo Verde','Cameroon','Central African Republic','Chad','Comoros','Congo','Congo (Democratic Republic)','Djibouti','Egypt','Equatorial Guinea','Eritrea','Eswatini','Ethiopia','Gabon','Gambia','Ghana','Guinea','Guinea-Bissau','Ivory Coast','Kenya','Lesotho','Liberia','Libya','Madagascar','Malawi','Mali','Mauritania','Mauritius','Morocco','Mozambique','Namibia','Niger','Nigeria','Rwanda','Sao Tome and Principe','Senegal','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan','Tanzania','Togo','Tunisia','Uganda','Zambia','Zimbabwe'
+        ];
+        // Register county (multi, hierarchical, prefill terms)
         register_taxonomy('county', [ 'resource' ], [
             'hierarchical' => true,
             'labels' => [
-                'name' => 'Counties',
-                'singular_name' => 'County',
-                'search_items' => 'Search Counties',
-                'all_items' => 'All Counties',
-                'edit_item' => 'Edit County',
-                'update_item' => 'Update County',
-                'add_new_item' => 'Add New County',
-                'new_item_name' => 'New County Name',
-                'menu_name' => 'County',
+                'name' => 'Countries',
+                'singular_name' => 'Country',
+                'search_items' => 'Search Countries',
+                'all_items' => 'All Countries',
+                'edit_item' => 'Edit Country',
+                'update_item' => 'Update Country',
+                'add_new_item' => 'Add New Country',
+                'new_item_name' => 'New Country Name',
+                'menu_name' => 'Country',
             ],
             'show_ui' => true,
             'show_admin_column' => true,
             'query_var' => true,
-            'rewrite' => [ 'slug' => 'county' ],
+            'rewrite' => [ 'slug' => 'country' ],
         ]);
-        // Register type (multi, not hierarchical)
+        // Insert countries if not present
+        foreach ($african_countries as $country) {
+            if (!term_exists($country, 'county')) {
+                wp_insert_term($country, 'county');
+            }
+        }
+        // Register type (multi, hierarchical for subtypes)
         register_taxonomy('type', [ 'resource' ], [
-            'hierarchical' => false,
+            'hierarchical' => true,
             'labels' => [
                 'name' => 'Types',
                 'singular_name' => 'Type',
@@ -80,7 +90,7 @@ class PSM_Resource_Manager {
             'query_var' => true,
             'rewrite' => [ 'slug' => 'type' ],
         ]);
-        // Register content_type (single, not hierarchical)
+        // Register content_type (single, not hierarchical, prefill terms)
         register_taxonomy('content_type', [ 'resource' ], [
             'hierarchical' => false,
             'labels' => [
@@ -99,6 +109,12 @@ class PSM_Resource_Manager {
             'query_var' => true,
             'rewrite' => [ 'slug' => 'content-type' ],
         ]);
+        $ctypes = ['PDF','Podcast','Video','Web Page'];
+        foreach ($ctypes as $ct) {
+            if (!term_exists($ct, 'content_type')) {
+                wp_insert_term($ct, 'content_type');
+            }
+        }
         // Register sector (multi, not hierarchical)
         register_taxonomy('sector', [ 'resource' ], [
             'hierarchical' => false,
@@ -118,6 +134,13 @@ class PSM_Resource_Manager {
             'query_var' => true,
             'rewrite' => [ 'slug' => 'sector' ],
         ]);
+    // Add taxonomy menus under Resources
+    add_action('admin_menu', function() {
+        add_submenu_page('edit.php?post_type=resource', 'Manage Countries', 'Countries', 'manage_categories', 'edit-tags.php?taxonomy=county&post_type=resource');
+        add_submenu_page('edit.php?post_type=resource', 'Manage Types', 'Types', 'manage_categories', 'edit-tags.php?taxonomy=type&post_type=resource');
+        add_submenu_page('edit.php?post_type=resource', 'Manage Content Types', 'Content Types', 'manage_categories', 'edit-tags.php?taxonomy=content_type&post_type=resource');
+        add_submenu_page('edit.php?post_type=resource', 'Manage Sectors', 'Sectors', 'manage_categories', 'edit-tags.php?taxonomy=sector&post_type=resource');
+    });
     }
     // Force the use of custom templates for each resource type (PDF, Video, Podcast)
     public static function setup_templates() {
