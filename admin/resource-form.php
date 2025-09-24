@@ -30,15 +30,21 @@ if ($thumb_url) {
 echo '</td></tr>';
 // Description
 echo '<tr><th><label for="psm_description">Description</label></th><td><textarea name="psm_description" id="psm_description" rows="5" class="large-text" style="width:100%;font-size:1.05em;padding:8px;min-height:90px;" required>' . $edit_desc . '</textarea></td></tr>';
-// County taxonomy (multi)
+// County taxonomy (multi, with add new)
 $all_counties = get_terms([ 'taxonomy'=>'county', 'hide_empty'=>false ]);
 echo '<tr><th><label for="psm_county">Country</label></th><td>';
 echo '<select name="psm_county[]" id="psm_county" multiple size="6" style="width:100%;max-width:340px;">';
 foreach ($all_counties as $county) {
-	$selected = in_array($county->name, $edit_county) ? 'selected' : '';
-	echo '<option value="' . esc_attr($county->name) . '" ' . $selected . '>' . esc_html($county->name) . '</option>';
+    $selected = in_array($county->name, $edit_county) ? 'selected' : '';
+    echo '<option value="' . esc_attr($county->name) . '" ' . $selected . '>' . esc_html($county->name) . '</option>';
 }
 echo '</select> <span style="font-size:11px">(Ctrl+click to multi-select)</span>';
+echo '<div style="margin-top:8px;display:flex;gap:8px;align-items:center;">';
+echo '<input type="text" id="psm_county_new" placeholder="Add new country..." style="width:60%;padding:4px 8px;">';
+echo '<button type="button" class="button" id="psm_county_add_btn">Add</button>';
+echo '<span id="psm_county_add_msg" style="font-size:11px;color:#008000;margin-left:8px;"></span>';
+echo '</div>';
+echo '<script>jQuery(function($){\n$("#psm_county_add_btn").on("click",function(){\n  var val = $("#psm_county_new").val().trim();\n  if(!val) return;\n  var exists = false;\n  $("#psm_county option").each(function(){ if($(this).val().toLowerCase()===val.toLowerCase()) exists=true; });\n  if(exists){ $("#psm_county_add_msg").text("Country already exists").css("color","#d00"); return; }\n  var newOpt = $("<option>").val(val).text(val).prop("selected",true);\n  $("#psm_county").append(newOpt);\n  $("#psm_county_new").val("");\n  $("#psm_county_add_msg").text("Added! Will be saved on submit.").css("color","#080");\n});\n});</script>';
 echo '</td></tr>';
 // Type taxonomy (multi, with add new)
 $all_types = get_terms([ 'taxonomy'=>'type', 'hide_empty'=>false ]);
@@ -56,25 +62,38 @@ echo '<span id="psm_type_add_msg" style="font-size:11px;color:#008000;margin-lef
 echo '</div>';
 echo '<script>jQuery(function($){\n$("#psm_type_add_btn").on("click",function(){\n  var val = $("#psm_type_new").val().trim();\n  if(!val) return;\n  var exists = false;\n  $("#psm_type option").each(function(){ if($(this).val().toLowerCase()===val.toLowerCase()) exists=true; });\n  if(exists){ $("#psm_type_add_msg").text("Type already exists").css("color","#d00"); return; }\n  var newOpt = $("<option>").val(val).text(val).prop("selected",true);\n  $("#psm_type").append(newOpt);\n  $("#psm_type_new").val("");\n  $("#psm_type_add_msg").text("Added! Will be saved on submit.").css("color","#080");\n});\n});</script>';
 echo '</td></tr>';
-// Content Type taxonomy (single)
+// Content Type taxonomy (single, with add new)
 $all_cts = get_terms([ 'taxonomy'=>'content_type', 'hide_empty'=>false ]);
 echo '<tr><th><label for="psm_content_type">Content Type</label></th><td>';
 echo '<select name="psm_content_type" id="psm_content_type" required style="width:100%;max-width:340px;">';
 echo '<option value="">Select content type</option>';
 foreach ($all_cts as $ct) {
-	$selected = (!empty($edit_content_type) && $edit_content_type[0] === $ct->name) ? 'selected' : '';
-	echo '<option value="' . esc_attr($ct->name) . '" ' . $selected . '>' . esc_html($ct->name) . '</option>';
+    $selected = (!empty($edit_content_type) && $edit_content_type[0] === $ct->name) ? 'selected' : '';
+    echo '<option value="' . esc_attr($ct->name) . '" ' . $selected . '>' . esc_html($ct->name) . '</option>';
 }
-echo '</select></td></tr>';
-// Sector taxonomy (multi)
+echo '</select>';
+echo '<div style="margin-top:8px;display:flex;gap:8px;align-items:center;">';
+echo '<input type="text" id="psm_content_type_new" placeholder="Add new content type..." style="width:60%;padding:4px 8px;">';
+echo '<button type="button" class="button" id="psm_content_type_add_btn">Add</button>';
+echo '<span id="psm_content_type_add_msg" style="font-size:11px;color:#008000;margin-left:8px;"></span>';
+echo '</div>';
+echo '<script>jQuery(function($){\n$("#psm_content_type_add_btn").on("click",function(){\n  var val = $("#psm_content_type_new").val().trim();\n  if(!val) return;\n  var exists = false;\n  $("#psm_content_type option").each(function(){ if($(this).val().toLowerCase()===val.toLowerCase()) exists=true; });\n  if(exists){ $("#psm_content_type_add_msg").text("Content type already exists").css("color","#d00"); return; }\n  var newOpt = $("<option>").val(val).text(val).prop("selected",true);\n  $("#psm_content_type").append(newOpt);\n  $("#psm_content_type_new").val("");\n  $("#psm_content_type_add_msg").text("Added! Will be saved on submit.").css("color","#080");\n});\n});</script>';
+echo '</td></tr>';
+// Sector taxonomy (multi, with add new)
 $all_sectors = get_terms([ 'taxonomy'=>'sector', 'hide_empty'=>false ]);
 echo '<tr><th><label for="psm_sector">Sector</label></th><td>';
 echo '<select name="psm_sector[]" id="psm_sector" multiple size="3" style="width:100%;max-width:340px;">';
 foreach ($all_sectors as $sector) {
-	$selected = in_array($sector->name, $edit_sector) ? 'selected' : '';
-	echo '<option value="' . esc_attr($sector->name) . '" ' . $selected . '>' . esc_html($sector->name) . '</option>';
+    $selected = in_array($sector->name, $edit_sector) ? 'selected' : '';
+    echo '<option value="' . esc_attr($sector->name) . '" ' . $selected . '>' . esc_html($sector->name) . '</option>';
 }
 echo '</select> <span style="font-size:11px">(Ctrl+click to multi-select)</span>';
+echo '<div style="margin-top:8px;display:flex;gap:8px;align-items:center;">';
+echo '<input type="text" id="psm_sector_new" placeholder="Add new sector..." style="width:60%;padding:4px 8px;">';
+echo '<button type="button" class="button" id="psm_sector_add_btn">Add</button>';
+echo '<span id="psm_sector_add_msg" style="font-size:11px;color:#008000;margin-left:8px;"></span>';
+echo '</div>';
+echo '<script>jQuery(function($){\n$("#psm_sector_add_btn").on("click",function(){\n  var val = $("#psm_sector_new").val().trim();\n  if(!val) return;\n  var exists = false;\n  $("#psm_sector option").each(function(){ if($(this).val().toLowerCase()===val.toLowerCase()) exists=true; });\n  if(exists){ $("#psm_sector_add_msg").text("Sector already exists").css("color","#d00"); return; }\n  var newOpt = $("<option>").val(val).text(val).prop("selected",true);\n  $("#psm_sector").append(newOpt);\n  $("#psm_sector_new").val("");\n  $("#psm_sector_add_msg").text("Added! Will be saved on submit.").css("color","#080");\n});\n});</script>';
 echo '</td></tr>';
 // PDF: upload
 echo '<tr class="psm-type-row psm-type-pdf"><th><label for="psm_pdf">PDF File</label></th><td><input type="file" name="psm_pdf" id="psm_pdf" accept="application/pdf">';
@@ -120,14 +139,33 @@ if (isset($_POST['psm_resource_nonce']) && wp_verify_nonce($_POST['psm_resource_
 	$desc = sanitize_textarea_field($_POST['psm_description']);
 	$counties = isset($_POST['psm_county']) ? array_map('sanitize_text_field', (array)$_POST['psm_county']) : [];
 	$types = isset($_POST['psm_type']) ? array_map('sanitize_text_field', (array)$_POST['psm_type']) : [];
-	// Insert new types if not exist
-	if (!empty($types)) {
-		foreach ($types as $t) {
-			if (!term_exists($t, 'type')) {
-				wp_insert_term($t, 'type');
-			}
-		}
-	}
+	// Insert new terms if not exist
+    if (!empty($counties)) {
+        foreach ($counties as $c) {
+            if (!term_exists($c, 'county')) {
+                wp_insert_term($c, 'county');
+            }
+        }
+    }
+    if (!empty($types)) {
+        foreach ($types as $t) {
+            if (!term_exists($t, 'type')) {
+                wp_insert_term($t, 'type');
+            }
+        }
+    }
+    if (!empty($content_type)) {
+        if (!term_exists($content_type, 'content_type')) {
+            wp_insert_term($content_type, 'content_type');
+        }
+    }
+    if (!empty($sectors)) {
+        foreach ($sectors as $s) {
+            if (!term_exists($s, 'sector')) {
+                wp_insert_term($s, 'sector');
+            }
+        }
+    }
 	$content_type = isset($_POST['psm_content_type']) ? sanitize_text_field($_POST['psm_content_type']) : '';
 	$sectors = isset($_POST['psm_sector']) ? array_map('sanitize_text_field', (array)$_POST['psm_sector']) : [];
 	$host = isset($_POST['psm_host']) ? sanitize_text_field($_POST['psm_host']) : '';
